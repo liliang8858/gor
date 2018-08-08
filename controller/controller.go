@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"strings"
 	"reflect"
+	"os"
 )
 
 
@@ -40,6 +41,17 @@ func (this *dispatchHandler)Error404Action(w http.ResponseWriter, r *http.Reques
 	fmt.Fprintf(w, "This is 404 page")
 }
 
+func (this *dispatchHandler)StaticAction(w http.ResponseWriter, r *http.Request) {
+	file :=  r.URL.Path[len("/"):]
+	f,err := os.Open(file)
+	defer f.Close()
+
+	if err != nil && os.IsNotExist(err){
+		fmt.Fprintf(w, "This is 404 page")
+	}else{
+		http.ServeFile(w,r,file)
+	}
+}
 
 // msg 需要传送的消息， topic 主题，也可以是sessionId
 func sendMsg(msg string,topic string)  {
@@ -59,8 +71,13 @@ func Dispatcher(w http.ResponseWriter, r *http.Request) {
 	pathInfo := strings.Trim(r.URL.Path, "/")
 	parts := strings.Split(pathInfo, "/")
 	var action = ""
-	if len(parts) > 0  && len(parts[0]) > 0{
-		action = strings.Title(parts[0]) + "Action"
+	var size = len(parts)
+	if size > 0  && len(parts[0]) > 0{
+		if strings.HasPrefix(parts[0],"static" ) {
+			action = "StaticAction"
+		}else{
+			action = strings.Title(parts[0]) + "Action"
+		}
 	}else{
 		action = "Error404Action"
 	}
