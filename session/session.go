@@ -184,12 +184,13 @@ func (sm sesmgr) gcOnce() time.Duration {
 	}
 }
 
+var sesmgrs = NewSessionManager(1) // session manager
 func GetSession(w http.ResponseWriter, req *http.Request) ISession {
 	var id = ""
 	if c, err := req.Cookie(TOKEN); err == nil {
 		id = c.Value
 	}
-	ses := sesmgr.Get(id)
+	ses := sesmgrs.Get(id)
 	if ses.Id() != id { //new session
 		http.SetCookie(w, &http.Cookie{
 			Name:  TOKEN,

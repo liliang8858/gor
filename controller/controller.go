@@ -13,7 +13,7 @@ import (
 )
 
 
-var sesmgr = session.NewSessionManager(1) // session manager
+
 var pushURL = "http://127.0.0.1:3001/push"		// push msg
 
 
