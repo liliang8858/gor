@@ -49,6 +49,7 @@ func (this *dispatchHandler)StaticAction(w http.ResponseWriter, r *http.Request)
 	if err != nil && os.IsNotExist(err){
 		fmt.Fprintf(w, "This is 404 page")
 	}else{
+		w.Header().Add("expirse",  "3600")
 		http.ServeFile(w,r,file)
 	}
 }
